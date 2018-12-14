@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <% include partials/_head %>
+</head>
+<body>
+<% include partials/_menu %>
+<div class="container-fluid bg-3 text-center">
+  <h3><%= page %></h3><br>
+  <div class="row">
+    <div class="col-sm-12">
+      <% include partials/_search_bar %>
+      <p>.</p>
+      <h4>Results</h4>
+      <p id="results_total"> Returned (1) Browse Results. </p>
+
+      <div id="results" class="">
+
+      </div>
+
+    </div>
+  </div>
+</div>
+</body>
+
+<% include partials/_script %>
+<script type="text/javascript">
+  var results_div = $('#results');
+  var results_details = $('#results_total');
+  var json_data;
+
+  $.getJSON( "./data/missoula_events_data.json", function(data) {
+    console.log("data: "+JSON.stringify(data));
+    json_data = data;
+
+    results_details.text(`Returned (${data.length}) Browse Results.`);
+
+    items = [];
+
+    var event_div = "";
+    $.each( data, function( key, val ) {
+      event_div += `<div class="event_div"><ul>`;
+      event_div += `<li><b>Event:</b> ${val["Name"]}</li>`;
+      event_div += `<li><b>Location:</b> ${val["Venue"]}</li>`;
+      event_div += `<li><b>Time:</b> ${val["Time"]}</li>`;
+      event_div += `</ul></div>`;
+    });
+
+    results_div.html(event_div);
+  });
+
+</script>
+</html>
