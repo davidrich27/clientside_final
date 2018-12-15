@@ -13,18 +13,16 @@ router.use('/', function(req, res, next) {
 
 /* GET search page. */
 router.get('/', function(req, res, next) {
-  modelview.results = [];
-  res.render('search', modelview);
-});
-
-router.get('/query/', function(req, res, next) {
-
+  if (Object.keys(req.query).length === 0) {
+    res.render('search', modelview);
+  } else {
     // pull querystring search terms
     var terms = {};
     terms.generalTerm = req.query.generalTerm;
     terms.eventTerm = req.query.eventTerm;
     terms.venueTerm = req.query.venueTerm;
     terms.isAdvanced = req.query.isAdvanced;
+    console.log('isAdvanced: '+isAdvanced);
 
     for (var key in terms) {
       if (terms[key] == "" || terms[key] == 'undefined') {
@@ -58,7 +56,8 @@ router.get('/query/', function(req, res, next) {
         }
       })
     }
-})
+  }
+});
 
 
 module.exports = router;

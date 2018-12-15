@@ -4,7 +4,7 @@ import os, sys
 import subprocess
 from datetime import datetime
 import MySQLdb
-import stacktrace
+import traceback
 
 ''' Establishes connection to DB based on config file. '''
 def connect_to_db():
@@ -29,49 +29,26 @@ def connect_to_db():
     mycursor = db_conn.cursor()
     return db_conn, mycursor
 
-''' Adds a single Event and related data to Table '''
-def add_event_to_db(mycursor, event):
+''' Adds Venue and Tags to Table '''
+def add_venue_and_tags(db_conn, mycursor, event):
+    now = datetime.now()
+    now = now.strftime('%Y-%m-%d %H:%M:%S')
 
     try:
-
-        # First, check if event/date combo exists in table
-        sql_query = 'SELECT * FROM Events WHERE Name = "{}" AND Date = "{}"'.format(event["Name"], event["DateTime"])
+        # check if venue in table
+        sql_query = 'SELECT * FROM Venues WHERE name = "{}"'.format(event["Venue"])
         mycursor.execute(sql_query)
         myresults = mycursor.fetchall()
-
-        now = datetime.now()
-        now = now.strftime('%Y-%m-%d %H:%M:%S')
-
-        if len(myresults) != 0:
-            eventId = myresults[0][0]
-        else:
-            # Next, check if venue in table
-            sql_query = 'SELECT * FROM Venues WHERE name = "{}"'.format(event["Venue"])
+        # if so, get ID from table, else insert new venue and get ID
+        if len(myresults) == 0:
+            fields = '{}, {}, {}'.format("name", "createdAt", "updatedAt")
+            values = '"{}", "{}", "{}"'.format(event["Venue"], now, now)
+            sql_query = 'INSERT INTO Venues ({}) VALUES ({})'.format(fields, values)
+            print(sql_query)
             mycursor.execute(sql_query)
-            myresults = mycursor.fetchall()
-            # if so, get ID from table, else insert new venue and get ID
-            if len(myresults) == 0:
-                fields = '{}, {}, {}'.format("name", "createdAt", "updatedAt")
-                values = '"{}", "{}", "{}"'.format(event["Venue"], now, now)
-                sql_query = 'INSERT INTO Venues ({}) VALUES ({})'.format(fields, values)
-                print(sql_query)
-                mycursor.execute(sql_query)
-            sql_query = 'SELECT * FROM Venues WHERE name = "{}"'.format(event["Venue"])
-            mycursor.execute(sql_query)
-            myresults = mycursor.fetchall()
-            venueId = myresults[0][0]
+            db_conn.commit()
 
-            # insert event into table
-            fields = '{}, {}, {}, {}, {}, {}, {}'.format("name", "description", "VenueId", "date", "time", "createdAt", "updatedAt")
-            values = '"{}", "{}", {}, "{}", "{}", "{}", "{}"'.format(event["Name"], event["Description"], venueId, event["DateTime"], event["Time"], now, now)
-            sql_query = 'INSERT INTO Events ({}) VALUES ({})'.format(fields, values)
-            mycursor.execute(sql_query)
-            sql_query = "SELECT LAST_INSERT_ID()"
-            mycursor.execute(sql_query)
-            myresults = mycursor.fetchall()
-            eventId = myresults[0][0]
-
-        # insert event-tags into linking table
+        # insert tags into table
         for k in range(len(event["Tags"])):
             tag = event["Tags"][k]
 
@@ -83,10 +60,56 @@ def add_event_to_db(mycursor, event):
             if len(myresults) == 0:
                 fields = '{}, {}, {}'.format("name", "createdAt", "updatedAt")
                 values = '"{}", "{}", "{}"'.format(tag, now, now)
-                sql_query = 'INSERT INTO Venues ({}) VALUES ({})'.format(fields, values)
+                sql_query = 'INSERT INTO Tags ({}) VALUES ({})'.format(fields, values)
+                print(sql_query)
                 mycursor.execute(sql_query)
-            # retrieve ID from table
-            sql_query = 'SELECT * FROM Venues WHERE name = "{}"'.format(tag)
+                db_conn.commit()
+    except:
+        print('***ERROR***')
+        traceback.print_exc()
+
+
+
+''' Adds a single Event and related data to Table '''
+def add_event_to_db(mycursor, event):
+
+    try:
+        # First, check if event/date combo exists in table
+        sql_query = 'SELECT * FROM Events WHERE Name = "{}" AND Date = "{}"'.format(event["Name"], event["DateTime"])
+        mycursor.execute(sql_query)
+        myresults = mycursor.fetchall()
+        print('event results: ', len(myresults))
+        print('results: ', myresults)
+
+        now = datetime.now()
+        now = now.strftime('%Y-%m-%d %H:%M:%S')
+
+        if len(myresults) != 0:
+            eventId = myresults[0][0]
+        else:
+            # Next, check if venue in table
+            sql_query = 'SELECT * FROM Venues WHERE name = "{}"'.format(event["Venue"])
+            mycursor.execute(sql_query)
+            myresults = mycursor.fetchall()
+            venueId = myresults[0][0]
+
+            # insert event into table
+            fields = '{}, {}, {}, {}, {}, {}, {}'.format("name", "description", "VenueId", "date", "time", "createdAt", "updatedAt")
+            values = "'{}', '{}', {}, '{}', '{}', '{}', '{}'".format(event["Name"], event["Description"], venueId, event["DateTime"], event["Time"], now, now)
+            sql_query = 'INSERT INTO Events ({}) VALUES ({})'.format(fields, values)
+            mycursor.execute(sql_query)
+            sql_query = "SELECT LAST_INSERT_ID()"
+            mycursor.execute(sql_query)
+            myresults = mycursor.fetchall()
+            print('LAST ID: ', myresults)
+            eventId = myresults[0][0]
+
+        # insert event-tags into linking table
+        for k in range(len(event["Tags"])):
+            tag = event["Tags"][k]
+
+            # Check if tag is in tag table
+            sql_query = 'SELECT * FROM Tags WHERE name = "{}"'.format(tag)
             mycursor.execute(sql_query)
             myresults = mycursor.fetchall()
             tagId = myresults[0][0]
@@ -103,6 +126,7 @@ def add_event_to_db(mycursor, event):
                 mycursor.execute(sql_query)
     except:
         print("***ERROR***")
+        traceback.print_exc()
 
     return
 
@@ -133,10 +157,15 @@ db_conn, mycursor = connect_to_db()
 data_folder = 'data/'
 dirname = os.path.dirname(os.path.abspath(__file__))
 json_files = os.listdir(os.path.join(dirname, data_folder))
-print(json_files)
+# print(json_files)
 
 for filename in json_files:
     with open(data_folder + filename) as f:
         events = json.load(f)
         for event in events:
+            print('adding venues and tags...')
+            add_venue_and_tags(db_conn, mycursor, event)
+            print('adding events...')
             add_event_to_db(mycursor, event)
+
+print('...done.')

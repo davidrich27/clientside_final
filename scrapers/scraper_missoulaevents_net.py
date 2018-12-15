@@ -36,6 +36,7 @@ for i in range(len(event_divs)):
         event = {}
         event["Source"] = event_page
         event["Name"] = event_div.find("div", attrs={"class": "event-title"}).text
+        event["Description"] = ""
         event["Date"] = {}
         event_day =  int(event_div.find("div", attrs={"class": "day-val"}).text)
         event_month = event_div.find("div", attrs={"class": "month-val"}).text

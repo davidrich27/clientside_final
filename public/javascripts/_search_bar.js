@@ -16,6 +16,7 @@ new autoComplete({
     }
 });
 
-function searchQuery() {
-  var generalTerm = $('#')
+function searchQuery(advancedBtn) {
+  $('#isAdvanced').val(advancedBtn);
+  return true;
 }

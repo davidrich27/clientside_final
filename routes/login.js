@@ -42,6 +42,7 @@ router.post('/', function(req, res, next) {
       res.render('login', modelview);
     } else {
       modelview.session.loggedIn = true;
+      modelview.session.userId = user.userId;
       modelview.session.username = user.username;
       modelview.session.isAdmin = user.isAdmin;
       res.redirect(`../profile`);
