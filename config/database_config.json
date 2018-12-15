@@ -6,7 +6,8 @@
     "host": "localhost",
     "dialect": "mysql",
     "port": 3306,
-    "logging": false
+    "logging": true,
+    "auth_plugin": "mysql_native_password"
   },
   "test": {
     "username": "root",

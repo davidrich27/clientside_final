@@ -13,11 +13,13 @@ var models = require('./models');
 
 var indexRouter = require('./routes/index');
 var loginRouter = require('./routes/login');
+var logoutRouter = require('./routes/logout');
 var registerRouter = require('./routes/register');
 var searchRouter = require('./routes/search');
 var browseRouter = require('./routes/browse');
 var profileRouter = require('./routes/profile');
 var usersRouter = require('./routes/users');
+var queryRouter = require('./routes/query');
 
 var app = express();
 
@@ -58,7 +60,6 @@ app.use(
 // Pass DB Model and Modelview to Routers as request params
 app.use('*', function(req, res, next) {
   req.locals = {};
-  console.log('models in app: '+ models);
   req.locals.models = models;
   req.locals.modelview = {};
   req.locals.modelview.session = req.session;
@@ -80,11 +81,13 @@ sequelize.authenticate().then(function(errors) { console.log(errors) });
 // route requests to proper scripts
 app.use('/', indexRouter);
 app.use('/login', loginRouter);
+app.use('/logout', logoutRouter);
 app.use('/register', registerRouter);
 app.use('/search', searchRouter);
 app.use('/browse', browseRouter);
 app.use('/profile', profileRouter);
 app.use('/users', usersRouter);
+app.use('/query', queryRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

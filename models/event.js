@@ -1,9 +1,14 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
   var Event = sequelize.define('Event', {
-    name: DataTypes.STRING(45),
+    name: DataTypes.STRING,
     description: DataTypes.TEXT,
-    date: DataTypes.DATE,
+    time: DataTypes.STRING,
+    date: DataTypes.DATEONLY,
+    isVerified: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   });
 
   Event.associate = function(models) {

@@ -6,12 +6,23 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     },
-    password: DataTypes.STRING,
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     email: DataTypes.STRING,
-    isAdmin: DataTypes.BOOLEAN,
+    isAdmin: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
   });
 
   User.associate = function(models) {
+    models.User.hasMany(models.Query);
   };
 
   return User;

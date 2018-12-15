@@ -13,9 +13,9 @@ router.use('/', function(req, res, next) {
 
 /* POST registration page */
 router.post('/', function(req, res, next) {
-  usernameTxt = req.body.username.toLowerCase();
-  emailTxt = req.body.email.toLowerCase();
-  passwordTxt = req.body.password;
+  usernameTxt = req.body.usernameRegister.toLowerCase();
+  emailTxt = req.body.emailRegister.toLowerCase();
+  passwordTxt = req.body.passwordRegister;
 
   // verify username not already taken
   const userByUsername = models.User.findOne({

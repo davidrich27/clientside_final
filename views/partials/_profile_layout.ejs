@@ -1,0 +1,70 @@
+<div class="container">
+  <div class="page-header">
+      <h1><%= session.username %>'s Profile</h1>
+  </div>
+  <div class="row">
+        <div class="panel with-nav-tabs panel-default">
+            <div class="panel-heading">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a href="#tab1default" data-toggle="tab">Overview</a></li>
+                        <li><a href="#tab2default" data-toggle="tab">Watch List</a></li>
+                    </ul>
+            </div>
+            <div class="panel-body">
+                <div class="tab-content">
+                    <div class="tab-pane fade in active" id="tab1default">
+                      <table class="table">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th scope="col"> User Details </th>
+                            <th scope="col"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <th scope="row"> Username: </th>
+                            <td> <%= user.username %> </td>
+                          </tr>
+                          <tr>
+                            <th scope="row"> Email: </th>
+                            <td> <%= user.email %> </td>
+                          </tr>
+                          <tr>
+                            <th scope="row"> Register: </th>
+                            <td> <%= user.createdAt %> </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="tab-pane fade" id="tab2default">
+                      <table class="table">
+                        <thead class="thead-dark">
+                          <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Watchlist</th>
+                            <th scope="col">Delete</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% for (var i in queries) { %>
+                          <% var query = queries[i] %>
+                          <tr>
+                            <th scope="row"><%= i+1 %></th>
+                            <td><%= query.generalTerm %></td>
+                            <td> <span class="glyphicon glyphicon-trash" style="color: red;"></span></td>
+                          </tr>
+                          <% } %>
+                          <tr>
+                            <th scope="row"></th>
+                            <td> <input type="text" name="" value="" class="form-control" placeholder="What event would you like to be informed about?"></td>
+                            <td> <div class="btn btn-success">Add to List <span class="glyphicon glyphicon-plus" style="color: white;"></span></div></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+<br/>

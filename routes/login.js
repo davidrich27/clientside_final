@@ -20,14 +20,14 @@ router.get('/', function(req, res, next) {
     res.render('login', modelview);
   } else {
     var username = modelview.session.username;
-    res.redirect('../profile/username');
+    res.redirect('../profile');
   }
 });
 
 /* POST login page */
 router.post('/', function(req, res, next) {
-  var usernameTxt = req.body.username.toLowerCase();
-  var passwordTxt = req.body.password;
+  var usernameTxt = req.body.usernameLogin.toLowerCase();
+  var passwordTxt = req.body.passwordLogin;
 
   // query database for user
   models.User.findOne({
@@ -44,7 +44,7 @@ router.post('/', function(req, res, next) {
       modelview.session.loggedIn = true;
       modelview.session.username = user.username;
       modelview.session.isAdmin = user.isAdmin;
-      res.redirect(`../profile/${user.username}`);
+      res.redirect(`../profile`);
     }
   });
 });

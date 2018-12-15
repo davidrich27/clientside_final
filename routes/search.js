@@ -5,22 +5,60 @@ var router = express.Router();
 router.use('/', function(req, res, next) {
   models = req.locals.models;
   modelview = req.locals.modelview;
+
+  modelview.page = 'Search';
+  modelview.menuId = 'search';
   next();
 });
 
 /* GET search page. */
 router.get('/', function(req, res, next) {
-  modelview.page = 'Search';
-  modelview.menuId = 'search';
+  modelview.results = [];
   res.render('search', modelview);
 });
 
-/* POST search */
-router.post('/', function(req, res, next) {
-  modelview.page = 'Search';
-  modelview.menuId = 'search';
-  res.render('search', modelview);
-});
+router.get('/query/', function(req, res, next) {
+
+    // pull querystring search terms
+    var terms = {};
+    terms.generalTerm = req.query.generalTerm;
+    terms.eventTerm = req.query.eventTerm;
+    terms.venueTerm = req.query.venueTerm;
+    terms.isAdvanced = req.query.isAdvanced;
+
+    for (var key in terms) {
+      if (terms[key] == "" || terms[key] == 'undefined') {
+        terms[key] = '%';
+      } else {
+        terms[key] = '%'+terms[key]+'%';
+      }
+    }
+
+    // checks type of search query
+    if (!isAdvanced) {
+      var results = models.Event.findAll({
+        where: {
+          [Op.or]: [
+            {name: {[Op.like]: generalTerm}},
+            {description: {[Op.like]: generalTerm}},
+            {venue: {[Op.like]: generalTerm}},
+            {tag: {[Op.like]: generalTerm}}
+          ]
+        }
+      })
+    } else {
+      var results = models.Event.findAll({
+        where: {
+          [Op.and]: [
+            {name: {[Op.like]: generalTerm}},
+            {description: {[Op.like]: generalTerm}},
+            {venue: {[Op.like]: generalTerm}},
+            {tag: {[Op.like]: generalTerm}}
+          ]
+        }
+      })
+    }
+})
 
 
 module.exports = router;

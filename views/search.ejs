@@ -13,6 +13,22 @@
       <p>Get started now searching to find your next big event, or sign up to get notified when your favorite show comes to town! </p>
 
       <% include partials/_search_bar %>
+
+      <div id="results_div">
+        <h4> Showing all (<%= results.length %>) result(s). </h4>
+        <% for (var i in results) { %>
+        <% result = results[i] %>
+        <div id="event_div">
+          <ul>
+            <li class="event-name"> <b>Name:</b> <%= result.name %> </li>
+            <li class="event-description"> <b>Description:</b> <%= result.description %> </li>
+            <li class="event-venue"> <b>Venue</b> <%= result.venue %> </li>
+            <li class="event-date"> <b>Name</b> <%= result.name %> </li>
+          </ul>
+        </div>
+        <% } %>
+      </div>
+
     </div>
   </div>
 </div>

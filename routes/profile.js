@@ -14,35 +14,32 @@ router.use('/', function(req, res, next) {
   next();
 });
 
-router.get('/', function(req, res, next) {
-  if (modelview.session.loggedIn) {
-    req.redirect(username);
-  } else {
-    modelview.foundUser = false;
-    res.render('profile', modelview);
-  }
-});
-
 /* GET user profile page. */
-router.get('/:username', function(req, res, next) {
-
+router.get('/', function(req, res, next) {
+  var username = modelview.session.username;
   models.User.findOne({
     where: {
-      username: req.params.username
-    }
-  }).then(function(user) {
+      username: username
+    },
+    //include: models.Query
+  })
+  .then(function(user) {
     // if user does not exist
     if(!user) {
       modelview.foundUser = false;
+      console.log('Could not find User!');
+      res.redirect('../../logout');
     }
     // if user found in database
     else {
       modelview.foundUser = true;
       modelview.user = user;
-
+      modelview.queries = [];
     }
   })
-  res.render('profile', modelview);
+  .then(function(){
+    res.render('profile', modelview);
+  })
 });
 
 module.exports = router;

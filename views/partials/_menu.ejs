@@ -10,14 +10,14 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <ul class="nav navbar-nav navbar-right">
-        <li id="home"><a href="/">HOME</a></li>
-        <li id="search"><a href="/search">SEARCH</a></li>
-        <li id="browse"><a href="/browse">BROWSE</a></li>
-        <li id="profile"><a href="/profile">MY PROFILE</a></li>
+        <li id="home"><a href="/"> <span class="glyphicon glyphicon-home"></span> HOME</a></li>
+        <li id="search"><a href="/search"> <span class="glyphicon glyphicon-search"></span> SEARCH</a></li>
+        <li id="browse"><a href="/browse"> <span class="glyphicon glyphicon-list-alt"></span> BROWSE</a></li>
         <% if (!session.loggedIn) {%>
-          <li id="login"><a href="/login">LOGIN</a></li>
+          <li id="login"><a href="/login"> <span class="glyphicon glyphicon-log-in"></span> LOGIN</a></li>
         <% } else { %>
-          <li id="logout"><a href="/profile">LOGOUT?</a></li>
+          <li id="profile"><a href="/profile"> <span class="glyphicon glyphicon-user"></span> <%= session.username.toUpperCase() %> </a></li>
+          <li id="logout"><a href="/logout"> <span class="glyphicon glyphicon-log-out"></span> LOGOUT?</a></li>
         <% } %>
       </ul>
     </div>
